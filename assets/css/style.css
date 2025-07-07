@@ -1,0 +1,141 @@
+
+/* Estilos personalizados */
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-in-left {
+    animation: slideInLeft 0.5s ease-in-out;
+}
+
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.rotate-in {
+    animation: rotateIn 0.5s ease-in-out;
+}
+
+@keyframes rotateIn {
+    from { opacity: 0; transform: rotate(-10deg); }
+    to { opacity: 1; transform: rotate(0); }
+}
+
+/* Estilos para o modo escuro */
+.dark body {
+    background-color: #1a202c;
+    color: #e2e8f0;
+}
+
+.dark main {
+    background-color: #2d3748;
+}
+
+/* Estilos para o menu mobile */
+#mobile-menu.hidden {
+    display: none;
+}
+
+#mobile-menu.block {
+    display: block;
+}
+
+
+
+
+/* Estilos para melhor performance */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Estilos para acessibilidade */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Focus styles para acessibilidade */
+a:focus,
+button:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* Estilos para o hero banner */
+.hero-banner {
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+/* Media query para dispositivos móveis */
+@media (max-width: 768px) {
+    .hero-banner {
+        background-attachment: scroll;
+        height: 200px;
+    }
+    
+    .hero-banner h1 {
+        font-size: 2rem;
+    }
+    
+    .hero-banner p {
+        font-size: 1rem;
+    }
+}
+
+/* Estilos para tabelas responsivas */
+.table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Estilos para accordions */
+.accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+}
+
+.accordion-content.show {
+    max-height: 1000px;
+    transition: max-height 0.3s ease-in;
+}
+
+/* Estilos para loading */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Estilos para skip links */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: #000;
+    color: #fff;
+    padding: 8px;
+    text-decoration: none;
+    z-index: 1000;
+}
+
+.skip-link:focus {
+    top: 6px;
+}
+
