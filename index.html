@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explorador Interativo: Hermenêutica Reformada</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Scholarly Warmth -->
+    <!-- Application Structure Plan: A thematic, non-linear dashboard structure was chosen to make the dense academic content of the treatise more accessible and engaging. Instead of forcing a linear read-through, the user can freely explore key areas of interest via a top navigation bar: 'Início' (Introduction), 'Jornada Histórica' (Historical Overview), 'Fundamentos' (Theological Pillars), 'O Método' (The Method in Practice), and 'Debate Atual' (Contemporary Challenges). This structure promotes user-driven learning. Key interactions include a clickable timeline for historical periods, expandable cards for theological principles, and a tabbed interface for practical exegesis examples. This approach breaks down complex information into digestible, interactive modules, enhancing usability and comprehension over a static, multi-page document. -->
+    <!-- Visualization & Content Choices:
+        - Report Info: Historical evolution of hermeneutics (Chapter 1). -> Goal: Compare eras. -> Viz/Method: Interactive timeline (HTML/CSS/JS) and a Chart.js horizontal bar chart. -> Interaction: Clicking timeline points reveals details; chart tooltips show key methods. -> Justification: Visualizes temporal progression and relative dominance more effectively than text alone. -> Library: Chart.js, Vanilla JS.
+        - Report Info: Theological foundations (Chapter 2). -> Goal: Inform on core principles. -> Viz/Method: Grid of interactive cards with expandable "Saiba mais" sections. -> Interaction: Clicking a button reveals detailed text. -> Justification: Organizes distinct concepts into scannable modules with optional deep-dive content. -> Library: Vanilla JS.
+        - Report Info: The Historical-Grammatical Method steps and applications (Chapters 3 & 4). -> Goal: Explain a process and demonstrate its use. -> Viz/Method: Detailed description with an expandable section for theoretical underpinnings, followed by a tabbed content area for examples. -> Interaction: Button reveals theory; tabs switch examples. -> Justification: Separates theory from practice cleanly. -> Library: Vanilla JS.
+        - Report Info: Postmodern challenges and Reformed responses (Chapter 5). -> Goal: Compare opposing viewpoints. -> Viz/Method: Two-column layout with expandable cards for detailed arguments. -> Interaction: Clicking buttons reveals in-depth analysis. -> Justification: Directly juxtaposes arguments for clear, comparative analysis at multiple levels of detail. -> Library: Vanilla JS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Source Sans 3', sans-serif; background-color: #FDFBF5; color: #402E32; }
+        h1, h2, h3, h4 { font-family: 'Lora', serif; }
+        .nav-link { transition: color 0.3s, border-color 0.3s; }
+        .nav-link.active { color: #D97706; border-bottom-color: #D97706; }
+        .nav-link:hover { color: #D97706; }
+        .content-section { display: none; }
+        .content-section.active { display: block; animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .card { background-color: #FFFFFF; border: 1px solid #EFEBE5; transition: transform 0.3s, box-shadow 0.3s; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .tab-button.active { background-color: #D97706; color: #FFFFFF; }
+        .timeline-item { position: relative; padding-left: 2.5rem; }
+        .timeline-item::before { content: ''; position: absolute; left: 0.4rem; top: 0.5rem; width: 1px; height: 100%; background-color: #D1C7BC; }
+        .timeline-item::after { content: ''; cursor: pointer; position: absolute; left: 0; top: 0.5rem; width: 1rem; height: 1rem; border-radius: 50%; background-color: #FFFFFF; border: 2px solid #D1C7BC; transition: background-color 0.3s, border-color 0.3s; }
+        .timeline-item.active::after, .timeline-item:hover::after { background-color: #D97706; border-color: #D97706; }
+        .chart-container { position: relative; width: 100%; max-width: 800px; margin-left: auto; margin-right: auto; height: 350px; max-height: 400px; }
+        @media (min-width: 768px) { .chart-container { height: 400px; } }
+        .expandable-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.7s ease-in-out;
+        }
+        .expand-button {
+            background-color: #F3F4F6;
+            color: #4B5563;
+            transition: background-color 0.3s;
+        }
+        .expand-button:hover {
+            background-color: #E5E7EB;
+        }
+        .prose p { margin-bottom: 1em; }
+        .prose h3 { margin-top: 1.5em; margin-bottom: 0.5em; }
+        .prose h4 { margin-top: 1.2em; margin-bottom: 0.4em; }
+    </style>
+</head>
+<body class="antialiased">
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <h1 class="text-xl md:text-2xl font-bold text-amber-700">Hermenêutica Reformada</h1>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#inicio" class="nav-link text-lg border-b-2 border-transparent">Início</a>
+                    <a href="#jornada" class="nav-link text-lg border-b-2 border-transparent">Jornada Histórica</a>
+                    <a href="#fundamentos" class="nav-link text-lg border-b-2 border-transparent">Fundamentos</a>
+                    <a href="#metodo" class="nav-link text-lg border-b-2 border-transparent">O Método</a>
+                    <a href="#debate" class="nav-link text-lg border-b-2 border-transparent">Debate Atual</a>
+                </div>
+                <div class="md:hidden">
+                    <select id="mobile-nav" class="bg-white border border-gray-300 rounded-md p-2">
+                        <option value="inicio">Início</option>
+                        <option value="jornada">Jornada Histórica</option>
+                        <option value="fundamentos">Fundamentos</option>
+                        <option value="metodo">O Método</option>
+                        <option value="debate">Debate Atual</option>
+                    </select>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8">
+        
+        <section id="inicio" class="content-section">
+            <div class="bg-white p-8 rounded-lg shadow-md border border-gray-200">
+                <div class="prose max-w-none text-gray-700 leading-relaxed">
+                    <h2 class="text-3xl md:text-4xl font-bold text-amber-800 mb-4 text-center">Orare et Labutare: Um Tratado sobre a Hermenêutica Reformada</h2>
+                    <p>A hermenêutica, definida como a ciência e a arte de estabelecer os princípios, leis e métodos de interpretação, transcende a esfera de uma mera disciplina acadêmica para se firmar como uma prática indispensável para a saúde teológica e a vitalidade da Igreja. A maneira como a comunidade de fé lê e compreende as Escrituras Sagradas determina fundamentalmente suas doutrinas, sua adoração e sua conduta diária. A existência de um vasto "abismo hermenêutico" — temporal, cultural e linguístico — entre o mundo dos autores bíblicos e o leitor contemporâneo torna a interpretação um ato que demanda disciplina, rigor e, sobretudo, fidelidade. A compreensão do texto sagrado não é um processo automático ou espontâneo; requer, de um lado, a iluminação do Espírito Santo e, de outro, o estudo diligente.</p>
+                    <p>Este tratado argumenta que a hermenêutica reformada, cujo ápice metodológico é o método histórico-gramatical, oferece o arcabouço mais fiel e coerente para a interpretação da Bíblia, precisamente por honrar seu duplo caráter — como Palavra de Deus e palavra humana. A crise teológica e a confusão doutrinária que afligem segmentos do evangelicalismo contemporâneo podem ser, em grande medida, atribuídas a hermenêuticas deficientes, que falham em manter o equilíbrio essencial proposto pelos reformadores. A ausência de um método interpretativo robusto e fiel conduz a um subjetivismo que relativiza a autoridade das Escrituras e distancia a Igreja de suas raízes históricas.</p>
+                    <p>Portanto, a defesa da hermenêutica reformada não constitui um mero exercício acadêmico, mas um ato pastoral e apologético fundamental para "a preservação e propagação da verdade". A jornada deste tratado seguirá uma progressão lógica, iniciando com uma contextualização da hermenêutica na história da Igreja, seguida de uma análise dos alicerces teológicos que sustentam a abordagem reformada. Posteriormente, será realizada uma exposição detalhada do método histórico-gramatical, com demonstrações de sua aplicação prática. Por fim, o tratado se engajará nos desafios contemporâneos, notadamente os impostos pelo pós-modernismo, demonstrando a robustez e a relevância contínua desta tradição interpretativa.</p>
+                    <p class="text-center text-md text-gray-600 italic mt-6">A máxima que encapsula este empreendimento foi articulada por João Calvino: <em>Orare et labutare</em> (orar e trabalhar). Com estas palavras, ele "expressou a necessidade de súplica pela ação iluminadora do Espírito Santo e do estudo diligente do texto e do contexto histórico, como requisitos indispensáveis à interpretação das Escrituras".</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="jornada" class="content-section">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-amber-800">A Jornada da Interpretação</h2>
+                <div class="prose max-w-2xl mx-auto mt-2 text-gray-600">
+                    <p>A história da hermenêutica cristã não é uma linha de progresso linear, mas uma série de desenvolvimentos dialéticos, onde cada abordagem surge, em parte, como uma resposta ou correção à anterior. Compreender essa trajetória é essencial para situar a singularidade e a necessidade da hermenêutica reformada. A hermenêutica é a disciplina que fornece as ferramentas para transpor o abismo que separa o leitor moderno do texto antigo. Essa distância não é meramente temporal, mas profundamente cultural e linguística, tornando a interpretação disciplinada uma necessidade absoluta para evitar a imposição de significados estranhos ao texto.</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                <div class="lg:col-span-2">
+                    <div id="timeline-container"></div>
+                </div>
+                <div id="timeline-content" class="lg:col-span-3 bg-white p-6 rounded-lg shadow-sm border border-gray-200 min-h-[400px] prose max-w-none text-gray-700 leading-relaxed"></div>
+            </div>
+             <div class="mt-12">
+                <h3 class="text-2xl font-bold text-center text-amber-800 mb-4">Dominância dos Métodos ao Longo do Tempo</h3>
+                <div class="chart-container bg-white p-4 rounded-lg shadow-md border border-gray-200">
+                    <canvas id="hermeneuticsChart"></canvas>
+                </div>
+            </div>
+        </section>
+        
+        <section id="fundamentos" class="content-section">
+             <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-amber-800">Os Alicerces da Hermenêutica Reformada</h2>
+                <p class="max-w-2xl mx-auto mt-2 text-gray-600">
+                   A abordagem reformada não é um conjunto de regras arbitrárias, mas um sistema coerente que flui de convicções teológicas profundas sobre Deus, o homem e a Escritura. Clique nos cartões abaixo para explorar os pilares que sustentam uma interpretação fiel e reverente do texto bíblico.
+                </p>
+            </div>
+            <div id="foundations-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            </div>
+        </section>
+
+        <section id="metodo" class="content-section">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-amber-800">O Método Histórico-Gramatical em Ação</h2>
+                <p class="max-w-2xl mx-auto mt-2 text-gray-600">
+                    Este é o coração da hermenêutica reformada: um método disciplinado que busca descobrir a intenção original do autor. Ele combina uma análise rigorosa da linguagem com uma profunda apreciação do contexto histórico. Veja abaixo os passos do método e explore exemplos práticos de sua aplicação.
+                </p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                <div id="method-theory"></div>
+                
+                <h3 class="text-2xl font-bold text-amber-700 mt-8 mb-4">As Etapas do Processo Exegético</h3>
+                <div id="method-steps" class="space-y-4"></div>
+
+                <h3 class="text-2xl font-bold text-amber-700 mt-8 mb-4">Aplicações Práticas</h3>
+                <div class="border-b border-gray-200 mb-4">
+                    <nav id="tabs-nav" class="-mb-px flex flex-wrap space-x-4" aria-label="Tabs"></nav>
+                </div>
+                <div id="tabs-content"></div>
+            </div>
+        </section>
+
+        <section id="debate" class="content-section">
+             <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-amber-800">A Hermenêutica no Cenário Pós-Moderno</h2>
+                <p class="max-w-2xl mx-auto mt-2 text-gray-600">
+                    Em nossa era, a própria ideia de um significado fixo e da autoridade do autor é questionada. O pensamento pós-moderno apresenta desafios significativos à interpretação bíblica tradicional. Esta seção explora esses desafios e as robustas respostas teológicas formuladas por pensadores reformados.
+                </p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-2xl font-bold text-red-800 mb-4 border-b-2 border-red-200 pb-2">O Desafio Pós-Moderno</h3>
+                    <div id="debate-desafio" class="space-y-4"></div>
+                </div>
+                 <div>
+                    <h3 class="text-2xl font-bold text-green-800 mb-4 border-b-2 border-green-200 pb-2">A Resposta Reformada</h3>
+                     <div id="debate-resposta" class="space-y-4"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white mt-12">
+        <div class="container mx-auto p-6 text-center">
+            <p>&copy; 2025 Explorador de Hermenêutica Reformada. Conteúdo adaptado do tratado acadêmico.</p>
+        </div>
+    </footer>
+
+    <script>
+        const contentData = {
+            timeline: [
+                { id: 'patristica', title: 'Era Patrística (100-600)', content: '<h3>A Era Patrística: O Duelo das Escolas</h3><p>Nos primeiros séculos da Igreja, duas grandes escolas de interpretação emergiram, representando polos hermenêuticos distintos.</p><h4>Escola de Alexandria</h4><p>Fortemente influenciada pela filosofia platônica, esta escola, liderada por figuras como Clemente e Orígenes, priorizava o método alegórico. Embora afirmassem a inspiração divina da Bíblia, acreditavam que o sentido literal ocultava verdades espirituais mais profundas, acessíveis apenas através da alegoria. O Antigo Testamento, em particular, era visto como um livro de enigmas a serem decifrados alegoricamente.</p><h4>Escola de Antioquia</h4><p>Em reação direta ao subjetivismo de Alexandria, a escola de Antioquia, com expoentes como Diodoro de Tarso e, mais notavelmente, João Crisóstomo, defendia uma abordagem que valorizava o sentido literal, histórico e gramatical do texto. O objetivo era descobrir o significado pretendido pelo autor em seu contexto original. Crisóstomo, em particular, é lembrado por sua alta visão da infalibilidade das Escrituras.</p><h4>Escola do Ocidente</h4><p>Intérpretes como Agostinho e Jerônimo tentaram uma síntese, mas introduziram um elemento que se tornaria dominante: a autoridade da tradição eclesiástica como guia normativo para a interpretação. Para eles, a Bíblia devia ser lida à luz do ensino consolidado da Igreja.</p>' },
+                { id: 'medieval', title: 'Era Medieval (600-1500)', content: '<h3>A Hermenêutica Medieval: O Domínio da Tradição</h3><p>Durante a Idade Média, a abordagem interpretativa solidificou-se em torno do método conhecido como <em>Quadriga</em>, ou o "quádruplo sentido da Escritura": literal, alegórico, moral (tropológico) e celestial (anagógico). Embora o sentido literal fosse o ponto de partida, ele era frequentemente visto como o menos importante, um mero invólucro para os significados espirituais mais ricos. Essa abordagem, combinada com a submissão total à autoridade interpretativa dos concílios e do papado, fez da Bíblia um "livro de mistérios", cujo significado era mediado e controlado pela instituição eclesiástica, distanciando-o do leitor comum. A objetividade foi perdida em meio a uma multiplicidade de significados possíveis.</p>' },
+                { id: 'reforma', title: 'A Reforma (1500-1650)', content: '<h3>A Virada da Reforma: <em>Sola Scriptura</em></h3><p>A Reforma Protestante do século XVI representou uma revolução hermenêutica. Preparada pelo humanismo renascentista e seu clamor <em>ad fontes</em> ("às fontes"), que incentivou o estudo dos textos bíblicos em suas línguas originais, a Reforma restabeleceu a primazia das Escrituras.</p><p>O princípio do <em>Sola Scriptura</em> (Somente a Escritura) tornou-se o fundamento hermenêutico, afirmando que a Bíblia é a única regra infalível de fé e prática, superior a qualquer tradição ou autoridade eclesiástica. Isso rompeu com o modelo católico de duas fontes de revelação (Escritura e Tradição). Os reformadores, como Martinho Lutero e João Calvino, lideraram um retorno ao sentido único e literal do texto, buscando o que o autor inspirado pretendia comunicar. Calvino, considerado por muitos o maior exegeta da Reforma, resumiu este princípio de forma lapidar: "a primeira tarefa do intérprete é deixar que o autor diga o que ele de fato diz, em vez de atribuir-lhe o que pensa que ele deva dizer".</p>' },
+                { id: 'modernidade', title: 'Pós-Reforma e Modernidade (1650-Hoje)', content: '<h3>Do Pós-Reforma à Modernidade</h3><p>O período pós-Reforma viu a consolidação da ortodoxia protestante, mas também uma tendência de a exegese se tornar serva da dogmática, usada principalmente para defender os credos e confissões de fé. O advento do Iluminismo, contudo, introduziu uma nova e radical bifurcação na hermenêutica.</p><h4>O Método Histórico-Crítico (MHC)</h4><p>Nascido do racionalismo iluminista, o MHC aborda a Bíblia como qualquer outro livro antigo, aplicando pressupostos de ceticismo filosófico. Ele tende a questionar a autoria tradicional, a historicidade dos milagres e a própria noção de revelação divina, tornando-se a principal ferramenta da teologia liberal.</p><h4>O Método Histórico-Gramatical (MHG)</h4><p>Em reação ao racionalismo do MHC e como uma formalização dos princípios da Reforma, o MHG foi sistematizado por eruditos como Johann August Ernesti e defendido por teólogos ortodoxos como Ernst Wilhelm Hengstenberg. Este método manteve o compromisso com a inspiração e autoridade das Escrituras, insistindo na análise rigorosa da gramática e do contexto histórico para determinar a intenção do autor.</p>' }
+            ],
+            foundations: [
+                { icon: '📖', title: 'Sola Scriptura', summary: 'A Bíblia é a única regra infalível de fé e prática. Portanto, ela mesma deve ser a chave final para sua própria interpretação, através do princípio da analogia da fé.', details: '<h4>A Escritura como sua Própria Intérprete (<em>Scriptura sui ipsius interpres</em>)</h4><p>Este princípio, um corolário direto do <em>Sola Scriptura</em>, estabelece que, se a Bíblia é a autoridade suprema e suficiente, então ela mesma deve ser a chave final para sua própria interpretação. Isso se desdobra no princípio da <em>analogia da fé (analogia fidei)</em>, que postula que nenhuma interpretação de uma passagem particular pode contradizer o ensino claro e consistente do restante das Escrituras. A Bíblia é vista como um todo unificado, uma revelação progressiva, mas internamente coerente, cujo tema central é o plano redentor de Deus. Portanto, as passagens mais claras e didáticas devem iluminar as mais obscuras ou narrativas, e não o contrário.</p>' },
+                { icon: '🙏', title: 'Orare et Labutare', summary: 'Orar e trabalhar. A interpretação exige tanto a iluminação do Espírito Santo (oração) quanto o estudo diligente da gramática e da história (trabalho).', details: '<h4>A Dupla Necessidade: <em>Orare et Labutare</em></h4><p>A consciência do caráter divino-humano da Bíblia leva a uma dupla necessidade na prática interpretativa, elegantemente resumida na máxima de Calvino <em>orare et labutare</em> (orar e trabalhar).</p><p><b>Oração e Iluminação (<em>Orare</em>):</b> A doutrina da depravação total ensina que a mente humana, afetada pelo pecado, é incapaz de compreender e aceitar as verdades espirituais por si mesma (1 Co 2:14). Portanto, a oração suplicando pela iluminação do Espírito Santo não é um mero ato devocional preliminar, mas um componente hermenêutico essencial.</p><p><b>Estudo e Diligência (<em>Labutare</em>):</b> A necessidade da iluminação divina não anula a responsabilidade humana. Visto que Deus se revelou na história, usando autores, línguas e culturas específicas, o "estudo diligente da língua e do contexto histórico" é igualmente indispensável. O ministro da Palavra é aquele que "se afadiga no estudo dela" (1 Tm 5:17).</p>' },
+                { icon: '🕊️', title: 'Caráter Divino-Humano', summary: 'A Bíblia é 100% divina em sua origem (inspirada) e 100% humana em sua forma (escrita por autores humanos). Uma hermenêutica fiel deve honrar ambos os aspectos.', details: '<h4>Pressupostos Teológicos Indispensáveis</h4><p>A hermenêutica reformada é abertamente pressuposicional. Ela parte de um conjunto de convicções doutrinárias que moldam todo o processo interpretativo.</p><p><b>Doutrina da Escritura:</b> O ponto de partida inegociável é a visão elevada da Bíblia como "Palavra de Deus, inspirada, autoritativa, infalível, suficiente e única regra de fé e prática". Esta convicção exige uma abordagem de submissão e reverência.</p><p><b>Caráter Divino-Humano:</b> A hermenêutica reformada mantém em equilíbrio o duplo caráter das Escrituras. Elas são divinas em sua origem (inspiradas pelo Espírito Santo) e humanas em sua forma (escritas por autores humanos, em línguas humanas, dentro de contextos históricos específicos). Negligenciar o aspecto divino leva ao racionalismo; negligenciar o aspecto humano leva ao misticismo.</p>' },
+                { icon: '✝️', title: 'Centralidade de Cristo', summary: 'A hermenêutica reformada é cristotélica. Cristo é o ponto focal e o cumprimento de toda a Escritura. O Antigo Testamento aponta para Ele; o Novo Testamento O revela.', details: '<h4>A Centralidade de Cristo (Interpretação Cristotélica)</h4><p>A hermenêutica reformada é intrinsecamente cristocêntrica. Os reformadores, seguindo o exemplo de Cristo e dos apóstolos, viam Jesus como o cumprimento e o ponto focal de toda a Escritura. A interpretação de Calvino, em particular, é descrita como "cristotélica", significando que ele encontrava Cristo no Antigo Testamento não por meio de alegorias arbitrárias, mas com base em uma "teologia bíblica saudável que pressupunha a unidade dos testamentos". O Antigo Testamento aponta para Cristo, e o Novo Testamento o revela, formando uma única e grande narrativa da redenção centrada Nele.</p>' },
+                { icon: '🔍', title: 'Intenção Autoral', summary: 'O objetivo da interpretação é descobrir o significado único pretendido pelo autor humano inspirado. Isso ancora o significado no texto e o protege do subjetivismo.', details: '<h4>O Primado da Intenção Autoral</h4><p>O pilar central do MHG é a busca pelo significado único pretendido pelo autor humano inspirado. A premissa é que a comunicação ocorre quando a intenção de um autor é compreendida por um leitor. Assim, "a interpretação autorizada não pode fugir da intenção do autor". Este princípio é o que ancora o significado no texto e o protege do subjetivismo do leitor, onde cada um poderia atribuir seu próprio significado à passagem. A busca pela intenção autoral é um ato de submissão à autoridade do texto como comunicação divina.</p>' },
+                { icon: '✨', title: 'Significado vs. Significância', summary: 'O significado é singular e atrelado à intenção do autor. A significância (aplicação) é como esse significado se relaciona com o leitor hoje e pode ser múltipla.', details: '<h4>Significado vs. Significância</h4><p>O MHG insiste na importante distinção entre <em>significado</em> e <em>significância</em>. O <b>significado</b> é singular, histórico e está atrelado à intenção do autor no momento da escrita. É aquilo que o texto <em>significava</em>. A <b>significância</b> refere-se à relevância e aplicação daquele significado para diferentes leitores em diferentes épocas, o que pode ser múltiplo. É aquilo que o texto <em>significa</em> para nós hoje. O MHG insiste que a significância legítima só pode ser derivada de um significado corretamente estabelecido. Tentar encontrar significância sem primeiro estabelecer o significado é o caminho para o subjetivismo e a má interpretação.</p>' }
+            ],
+            method_theory: {
+                summary: 'O MHG é um sistema que busca descobrir a intenção original do autor através da análise da gramática e do contexto histórico. Ele se distingue do Método Histórico-Crítico (MHC) por seus pressupostos de fé.',
+                details: '<h4>Definição, Origens e Distinções</h4><p>O MHG é o sistema de interpretação que busca descobrir objetivamente a intenção original do autor humano para sua audiência original. Para alcançar esse objetivo, ele se concentra na análise meticulosa da gramática e no contexto histórico-cultural em que o texto foi produzido. Embora seus princípios remontem à Escola de Antioquia e tenham sido revitalizados na Reforma, o MHG como um sistema formalizado ganhou proeminência após o Iluminismo, em parte como uma reação ortodoxa ao método histórico-crítico (MHC). A distinção fundamental entre os dois reside nos pressupostos: o MHG opera a partir da fé na inspiração e autoridade da Bíblia, enquanto o MHC opera a partir do ceticismo racionalista.</p><h4>Modelos Contemporâneos</h4><p>A tradição do MHG é viva e continua a ser refinada. Modelos como a "Teologia Exegética" de Walter Kaiser Jr. e a "Tríade Hermenêutica" de Andreas Köstenberger não representam uma ruptura com o MHG, mas sim um desenvolvimento interno que busca tornar o método mais sistemático, rigoroso e explicitamente conectado à tarefa final da teologia e da pregação.</p>'
+            },
+            method_steps: [
+                { title: '1. Análise Textual e Contextual', content: 'Estabelecer o texto confiável e imergir no mundo do autor: seu ambiente histórico, cultural e literário. Isso evita anacronismos e ancora a passagem em sua realidade original. Inclui a crítica textual, a análise do contexto histórico, cultural, literário e do gênero textual.' },
+                { title: '2. Análise Gramatical', content: 'Investigar o significado das palavras (lexicologia) e a estrutura das frases (sintaxe). Este passo revela a lógica do autor, suas ênfases e o fluxo de seu argumento. Envolve um estudo profundo do campo semântico das palavras e da relação gramatical entre elas.' },
+                { title: '3. Análise Teológica (Síntese)', content: 'Conectar a mensagem da passagem com os grandes temas da Bíblia (Teologia Bíblica) e com o corpo doutrinário cristão (<em>analogia fidei</em>), garantindo consistência com a totalidade da revelação. A exegese culmina na síntese teológica.' }
+            ],
+            tabs: [
+                { id: 'gen', title: 'Gênesis 1-3', content: '<h4>Exegese de Narrativa Histórica</h4><p>O MHG revela Gênesis 1-3 não como mito, mas como história teológica. Ao contrastar com mitos de criação do Antigo Oriente Próximo, o texto se mostra polêmico, afirmando um Deus único e soberano. A análise do hebraico (e.g., o verbo <em>bārāʾ</em>, "criar") e da estrutura literária reforça sua intenção como um relato fundamental sobre a Criação, a dignidade humana e a Queda, estabelecendo a base para toda a Bíblia.</p>' },
+                { id: 'eph', title: 'Efésios 2:8-10', content: '<h4>Exegese de Epístola</h4><p>A precisão gramatical do MHG é crucial aqui. Em "e <b>isto</b> não vem de vós", o pronome grego <em>touto</em> (isto) é neutro, não se referindo apenas à "fé" (<em>pistis</em>, feminino), mas a todo o conceito da salvação pela graça através da fé. Isso prova que todo o processo é um dom de Deus, não apenas a graça. O método também distingue as obras meritórias (que não salvam) das boas obras (que são o propósito da salvação).</p>' },
+                { id: 'jhn', title: 'João 3:16', content: '<h4>Exegese de Evangelho</h4><p>O MHG resgata este versículo do isolamento. O contexto é o diálogo de Jesus com Nicodemos, um mestre que não compreende o plano de Deus. A análise da palavra "mundo" (<em>kosmos</em>), que em João frequentemente denota a humanidade em rebelião, torna a frase "Deus amou o mundo" radical. Não é um amor por algo amável, mas um amor sacrificial e iniciador que se estende ao sistema hostil a Ele.</p>' }
+            ],
+            debate: {
+                desafio: [
+                    { title: 'A "Morte do Autor"', summary: 'A intenção do autor é declarada irrelevante. O significado é criado pelo leitor, abrindo caminho para o subjetivismo e o relativismo.', details: '<h4>A "Morte do Autor" e o Relativismo</h4><p>Em uma virada radical, o pensamento pós-moderno, especialmente em suas vertentes desconstrucionistas, declara a intenção do autor como irrelevante ou inacessível. O significado não reside no que o autor quis dizer, mas é criado no ato da leitura, na interação entre o texto e o leitor. Isso abre a porta para uma pluralidade infinita de interpretações, todas consideradas igualmente válidas. A consequência inevitável é o relativismo absoluto. Se o autor não determina o significado, e se cada leitor o cria, então não há um significado objetivo. A Bíblia deixa de ser a Palavra <em>de</em> Deus para se tornar meramente uma coleção de palavras humanas <em>sobre</em> Deus.</p>' },
+                    { title: 'Hermenêutica da Suspeita', summary: 'O texto bíblico é lido não para encontrar verdade, mas para "desmascarar" supostas ideologias de poder e opressão.', details: '<h4>A Hermenêutica da Suspeita</h4><p>Em vez de uma "hermenêutica da confiança", que busca entender o que o texto afirma, o pós-modernismo promove uma "hermenêutica da suspeita". Abordagens como o desconstrucionismo, a crítica feminista e a pós-colonial leem os textos bíblicos não para encontrar a verdade, mas para "desmascarar" supostas ideologias de poder, opressão e preconceito que estariam codificadas na linguagem. O texto se torna um artefato político a ser decodificado, não uma mensagem a ser recebida. O MHG é atacado por sua "busca objetiva da intenção do autor", sendo rotulado como um projeto ingênuo e arrogante da Modernidade racionalista.</p>' }
+                ],
+                resposta: [
+                    { title: 'Kevin Vanhoozer e o "Teodrama"', summary: 'Responde à crise re-fundamentando a hermenêutica na doutrina de um Deus comunicativo. A Bíblia é o "roteiro" divino para a Igreja "encenar".', details: '<h4>Kevin Vanhoozer: Teologia da Comunicação e Teodrama</h4><p>Vanhoozer oferece uma das respostas mais sofisticadas. Ele argumenta que a crise hermenêutica é, em sua raiz, uma crise teológica. Sua resposta é propor uma hermenêutica fundamentada na doutrina de Deus como um Ser comunicativo. O significado não é uma entidade abstrata, mas um <b>ato comunicativo</b> trinitário. Ao fundamentar a hermenêutica na Trindade, Vanhoozer "ressuscita o autor, redime o texto e reforma o leitor".</p><p>Ele aprofunda sua proposta com a metáfora do <b>teodrama</b>. A história da redenção é um grande drama divino. As Escrituras são o "roteiro" divinamente autorizado. A Igreja é a "companhia de teatro" chamada a participar deste drama. E a doutrina é a "direção de palco" que guia a Igreja em uma "performance" fiel do evangelho. Essa abordagem reconhece a crítica pós-moderna à neutralidade, mas subordina a atividade da comunidade ao roteiro canônico, evitando o relativismo.</p>' },
+                    { title: 'Defesa da Ortodoxia', summary: 'Teólogos como Augustus Nicodemus e Moisés Silva reafirmam que a busca pela intenção do autor é a única âncora contra o subjetivismo.', details: '<h4>A Defesa da Ortodoxia por Outros Teólogos</h4><p><b>Augustus Nicodemus Lopes:</b> Ele defende veementemente o MHG como o método historicamente ligado à Reforma e o mais coerente com a natureza divino-humana das Escrituras. Ele argumenta que a crise do evangelicalismo só pode ser sanada com um retorno ao uso consistente deste método, que rompe com a subjetividade das "novas hermenêuticas".</p><p><b>Moisés Silva:</b> Em suas obras, Silva defende uma hermenêutica evangélica sóbria. Embora reconheça que todo leitor se aproxima do texto com pressupostos, ele insiste na possibilidade e na necessidade de um estudo rigoroso para determinar o significado original pretendido pelo autor, combatendo a ideia de que o significado é puramente subjetivo.</p>' }
+                ]
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const sectionsElems = document.querySelectorAll('.content-section');
+            const navLinksElems = document.querySelectorAll('.nav-link');
+            const mobileNav = document.getElementById('mobile-nav');
+
+            const setActiveSection = (hash) => {
+                const sectionId = hash.substring(1);
+                sectionsElems.forEach(s => s.classList.toggle('active', s.id === sectionId));
+                navLinksElems.forEach(l => l.classList.toggle('active', l.getAttribute('href') === hash));
+                if (mobileNav.value !== sectionId) mobileNav.value = sectionId;
+                window.scrollTo(0, 0);
+            }
+
+            const navigate = (e) => {
+                e.preventDefault();
+                const hash = e.currentTarget.getAttribute('href');
+                if(hash) {
+                    history.pushState(null, null, hash);
+                    setActiveSection(hash);
+                }
+            };
+            
+            navLinksElems.forEach(link => link.addEventListener('click', navigate));
+            
+            mobileNav.addEventListener('change', (e) => {
+                const hash = `#${e.target.value}`;
+                history.pushState(null, null, hash);
+                setActiveSection(hash);
+            });
+
+            window.addEventListener('popstate', () => {
+                const hash = window.location.hash || '#inicio';
+                setActiveSection(hash);
+            });
+            
+            const initialHash = window.location.hash || '#inicio';
+            setActiveSection(initialHash);
+            
+            populateTimeline();
+            populateFoundations();
+            populateMethod();
+            populateDebate();
+            populateTabs();
+            renderChart();
+        });
+
+        function createExpandableCard(item) {
+            const card = document.createElement('div');
+            card.className = 'card p-6 rounded-lg';
+            card.innerHTML = `
+                <div class="flex items-start mb-3">
+                    ${item.icon ? `<span class="text-3xl mr-4">${item.icon}</span>` : ''}
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-amber-700">${item.title}</h3>
+                        <p class="text-gray-600 leading-relaxed mt-2">${item.summary}</p>
+                    </div>
+                </div>
+                <div class="expandable-content">
+                    <div class="prose prose-sm max-w-none text-gray-700 mt-4 pt-4 border-t border-gray-200">
+                        ${item.details}
+                    </div>
+                </div>
+                <div class="text-right mt-4">
+                    <button class="expand-button text-sm font-semibold py-1 px-3 rounded-full">Saiba mais...</button>
+                </div>
+            `;
+            const button = card.querySelector('.expand-button');
+            const content = card.querySelector('.expandable-content');
+            button.addEventListener('click', () => {
+                const isExpanded = content.style.maxHeight && content.style.maxHeight !== '0px';
+                if (isExpanded) {
+                    content.style.maxHeight = '0px';
+                    button.textContent = 'Saiba mais...';
+                } else {
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                    button.textContent = 'Mostrar menos';
+                }
+            });
+            return card;
+        }
+
+        function populateTimeline() {
+            const container = document.getElementById('timeline-container');
+            const contentEl = document.getElementById('timeline-content');
+            container.innerHTML = '';
+            
+            contentData.timeline.forEach((item, index) => {
+                const itemEl = document.createElement('div');
+                itemEl.className = 'timeline-item pb-8';
+                const titleEl = document.createElement('h4');
+                titleEl.className = 'font-bold text-lg mb-1 cursor-pointer hover:text-amber-600';
+                titleEl.textContent = item.title;
+                itemEl.appendChild(titleEl);
+                container.appendChild(itemEl);
+
+                const handleClick = () => {
+                    document.querySelectorAll('.timeline-item').forEach(el => el.classList.remove('active'));
+                    itemEl.classList.add('active');
+                    contentEl.innerHTML = item.content;
+                };
+                itemEl.addEventListener('click', handleClick);
+                if (index === 0) handleClick();
+            });
+        }
+        
+        function populateFoundations() {
+            const grid = document.getElementById('foundations-grid');
+            grid.innerHTML = '';
+            contentData.foundations.forEach(item => {
+                grid.appendChild(createExpandableCard(item));
+            });
+        }
+
+        function populateMethod() {
+            const theoryContainer = document.getElementById('method-theory');
+            const stepsContainer = document.getElementById('method-steps');
+            theoryContainer.innerHTML = '';
+            stepsContainer.innerHTML = '';
+
+            const theoryCard = createExpandableCard({
+                title: 'Fundamentos Teóricos do Método',
+                summary: contentData.method_theory.summary,
+                details: contentData.method_theory.details
+            });
+            theoryContainer.appendChild(theoryCard);
+
+            contentData.method_steps.forEach(step => {
+                const stepEl = document.createElement('div');
+                stepEl.className = 'p-4 border-l-4 border-amber-500 bg-amber-50 rounded-r-lg';
+                stepEl.innerHTML = `
+                    <h4 class="font-bold text-lg">${step.title}</h4>
+                    <p class="text-gray-700">${step.content}</p>
+                `;
+                stepsContainer.appendChild(stepEl);
+            });
+        }
+
+        function populateDebate() {
+            const desafioContainer = document.getElementById('debate-desafio');
+            const respostaContainer = document.getElementById('debate-resposta');
+            desafioContainer.innerHTML = '';
+            respostaContainer.innerHTML = '';
+
+            contentData.debate.desafio.forEach(item => {
+                desafioContainer.appendChild(createExpandableCard(item));
+            });
+            contentData.debate.resposta.forEach(item => {
+                respostaContainer.appendChild(createExpandableCard(item));
+            });
+        }
+
+        function populateTabs() {
+            const nav = document.getElementById('tabs-nav');
+            const content = document.getElementById('tabs-content');
+            nav.innerHTML = '';
+            content.innerHTML = '';
+
+            contentData.tabs.forEach((tab, index) => {
+                const button = document.createElement('button');
+                button.className = 'tab-button whitespace-nowrap py-2 px-4 border-b-2 font-medium text-sm rounded-t-lg transition-colors mb-2';
+                button.textContent = tab.title;
+                
+                const panel = document.createElement('div');
+                panel.className = 'tab-panel p-4 bg-gray-50 rounded-b-lg prose prose-sm max-w-none';
+                panel.innerHTML = tab.content;
+
+                if (index === 0) {
+                    button.classList.add('active');
+                } else {
+                    panel.style.display = 'none';
+                }
+
+                button.addEventListener('click', () => {
+                    document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+                    button.classList.add('active');
+                    document.querySelectorAll('.tab-panel').forEach(p => p.style.display = 'none');
+                    panel.style.display = 'block';
+                });
+
+                nav.appendChild(button);
+                content.appendChild(panel);
+            });
+        }
+        
+        function renderChart() {
+            const ctx = document.getElementById('hermeneuticsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Patrística', 'Medieval', 'Reforma', 'Modernidade (MHG)'],
+                    datasets: [{
+                        label: 'Duração Aproximada (em anos)',
+                        data: [500, 900, 150, 375],
+                        backgroundColor: ['rgba(191, 127, 63, 0.6)', 'rgba(120, 86, 75, 0.6)', 'rgba(217, 119, 6, 0.6)', 'rgba(67, 104, 80, 0.6)'],
+                        borderColor: ['rgba(191, 127, 63, 1)', 'rgba(120, 86, 75, 1)', 'rgba(217, 119, 6, 1)', 'rgba(67, 104, 80, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: true, text: 'Períodos Históricos da Interpretação Bíblica', font: { size: 16, family: 'Lora' } },
+                        tooltip: {
+                            callbacks: {
+                                title: function(context) {
+                                    const period = context[0].label;
+                                    const methods = { 'Patrística': 'Método: Alegórico vs. Literal-Histórico', 'Medieval': 'Método: Quadriga (Sentido Quádruplo)', 'Reforma': 'Método: Literal-Gramatical (Sola Scriptura)', 'Modernidade (MHG)': 'Método: Histórico-Gramatical (formalizado)' };
+                                    return [period, methods[period] || ''];
+                                }
+                            }
+                        }
+                    },
+                    scales: { x: { beginAtZero: true, title: { display: true, text: 'Anos (Aproximado)' } } }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
