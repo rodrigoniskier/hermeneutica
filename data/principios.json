@@ -1,0 +1,30 @@
+{
+  "title": "Princípios da Hermenêutica Reformada Histórico-Gramatical",
+  "principles": [
+    {
+      "title": "Sola Scriptura - A Escritura como Única Autoridade",
+      "description": "A Escritura é a única autoridade infalível e suficiente para todas as questões de fé e prática. Este princípio fundamental estabelece que nenhuma tradição eclesiástica, experiência pessoal ou revelação extra-bíblica pode ter autoridade igual ou superior às Escrituras. A Bíblia é auto-autenticadora e não necessita de validação externa para estabelecer sua autoridade divina."
+    },
+    {
+      "title": "Scriptura sui ipsius interpres - A Escritura Interpreta a Escritura",
+      "description": "A Escritura é sua própria intérprete, significando que passagens mais claras devem ser usadas para interpretar passagens mais obscuras. Este princípio, conhecido como analogia da fé, estabelece que não pode haver contradição real entre diferentes partes da Escritura, pois toda ela é inspirada por Deus. Textos paralelos e o contexto canônico mais amplo são essenciais para a interpretação correta."
+    },
+    {
+      "title": "Sensus Literalis - O Sentido Literal e Histórico-Gramatical",
+      "description": "O significado pretendido pelo autor humano original, determinado através da análise histórica, gramatical e contextual, é o sentido normativo do texto. Este princípio rejeita interpretações alegóricas arbitrárias e enfatiza a importância de compreender o texto em seu contexto histórico, cultural e linguístico original. O sentido literal não exclui figuras de linguagem, mas as interpreta de acordo com as convenções literárias apropriadas."
+    },
+    {
+      "title": "Tota Scriptura - A Unidade e Harmonia das Escrituras",
+      "description": "Toda a Escritura é inspirada por Deus e forma uma unidade orgânica e harmoniosa. Este princípio estabelece que a interpretação de qualquer passagem deve ser consistente com o ensino geral das Escrituras. A progressão da revelação divina através da história da salvação deve ser reconhecida, mas sem contradição entre o Antigo e Novo Testamentos."
+    },
+    {
+      "title": "Testimonium Spiritus Sancti - O Testemunho Interno do Espírito Santo",
+      "description": "O Espírito Santo ilumina o crente para compreender e aplicar as Escrituras, mas não revela novos significados além do que está objetivamente presente no texto. Este princípio equilibra a necessidade da iluminação divina com a objetividade da interpretação histórico-gramatical. O Espírito trabalha através dos meios ordinários de estudo cuidadoso e oração."
+    },
+    {
+      "title": "Perspicuitas Scripturae - A Clareza das Escrituras",
+      "description": "As Escrituras são suficientemente claras em suas doutrinas essenciais para que qualquer pessoa sincera, com a ajuda do Espírito Santo, possa compreender o caminho da salvação e os princípios básicos da vida cristã. Embora algumas passagens sejam difíceis, as verdades necessárias para a salvação e santificação são claramente reveladas."
+    }
+  ]
+}
+

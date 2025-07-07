@@ -1,0 +1,36 @@
+{
+  "title": "História da Hermenêutica Reformada",
+  "events": [
+    {
+      "year": "1517",
+      "title": "Reforma Protestante - Martinho Lutero",
+      "description": "Martinho Lutero estabelece o princípio da 'Sola Scriptura', enfatizando que a Escritura é a única autoridade final em questões de fé e prática. Lutero desenvolve o conceito de que a Escritura interpreta a Escritura (Scriptura sui ipsius interpres), rejeitando a autoridade magisterial da Igreja Católica na interpretação bíblica."
+    },
+    {
+      "year": "1536",
+      "title": "João Calvino e as Institutas",
+      "description": "João Calvino publica a primeira edição das 'Institutas da Religião Cristã', estabelecendo princípios hermenêuticos fundamentais. Calvino enfatiza a importância do contexto histórico e gramatical, a analogia da fé, e o testemunho interno do Espírito Santo na interpretação das Escrituras. Sua abordagem sistemática influencia profundamente a hermenêutica reformada."
+    },
+    {
+      "year": "1618-1619",
+      "title": "Sínodo de Dort",
+      "description": "O Sínodo de Dort estabelece os Cânones de Dort, reafirmando princípios hermenêuticos reformados contra o arminianismo. O sínodo enfatiza a necessidade de interpretar as Escrituras de forma consistente com a soberania divina e a depravação total, estabelecendo precedentes para a interpretação sistemática da teologia reformada."
+    },
+    {
+      "year": "1647",
+      "title": "Confissão de Fé de Westminster",
+      "description": "A Assembleia de Westminster produz a Confissão de Fé de Westminster, que inclui princípios hermenêuticos claros no Capítulo I. A confissão estabelece que a Escritura é sua própria intérprete, que o sentido pleno e verdadeiro de qualquer passagem não é múltiplo mas único, e que todas as controvérsias religiosas devem ser determinadas pela Escritura."
+    },
+    {
+      "year": "1800s",
+      "title": "Desenvolvimento da Hermenêutica Histórico-Gramatical",
+      "description": "Durante o século XIX, teólogos reformados como Charles Hodge em Princeton desenvolvem sistematicamente a abordagem histórico-gramatical. Esta metodologia enfatiza a importância de compreender o texto bíblico em seu contexto histórico original, utilizando ferramentas linguísticas e arqueológicas para determinar o significado pretendido pelo autor original."
+    },
+    {
+      "year": "1900s",
+      "title": "Escola de Princeton e Hermenêutica Conservadora",
+      "description": "B.B. Warfield, J. Gresham Machen e outros teólogos de Princeton refinam a hermenêutica reformada, defendendo a inerrância bíblica contra o liberalismo teológico. Eles desenvolvem métodos rigorosos de exegese que combinam erudição acadêmica com fidelidade confessional, estabelecendo padrões para a interpretação bíblica conservadora moderna."
+    }
+  ]
+}
+

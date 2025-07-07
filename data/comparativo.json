@@ -1,0 +1,14 @@
+{
+  "title": "Comparativo de Abordagens Hermenêuticas",
+  "description": "Esta tabela compara a hermenêutica reformada histórico-gramatical com outras abordagens interpretativas principais, destacando suas características distintivas e metodologias.",
+  "headers": ["Abordagem", "Autoridade", "Método Principal", "Papel da Tradição", "Interpretação Alegórica", "Contexto Histórico"],
+  "rows": [
+    ["Reformada Histórico-Gramatical", "Sola Scriptura", "Análise histórica, gramatical e contextual", "Subordinada à Escritura", "Limitada a textos claramente alegóricos", "Fundamental para interpretação"],
+    ["Católica Romana", "Escritura + Tradição + Magistério", "Interpretação magisterial", "Co-autoridade com a Escritura", "Aceita quando aprovada pela Igreja", "Importante mas subordinado à tradição"],
+    ["Liberal/Crítica", "Razão humana", "Crítica histórico-crítica", "Fonte de desenvolvimento religioso", "Frequentemente preferida ao literal", "Usado para questionar autenticidade"],
+    ["Pentecostal/Carismática", "Escritura + Experiência", "Interpretação pneumática", "Valorizada se confirma experiência", "Aceita através de revelação pessoal", "Menos enfatizado que experiência atual"],
+    ["Alegórica Patrística", "Escritura + Tradição Patrística", "Interpretação alegórica múltipla", "Autoridade interpretativa", "Método primário de interpretação", "Menos importante que significado espiritual"],
+    ["Dispensacionalista", "Sola Scriptura", "Literal com distinções dispensacionais", "Rejeitada se contradiz Escritura", "Rejeitada em favor do literal", "Importante para distinções dispensacionais"]
+  ]
+}
+
